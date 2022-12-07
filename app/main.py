@@ -6,7 +6,6 @@ from aiogram.utils import executor
 from app.recipes import Button
 from data import breakfast, lunch, dinner
 from app import keyboard
-# from app.handlers import AnswerHandler
 from app.core import dp, bot
 
 
