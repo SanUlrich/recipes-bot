@@ -3,9 +3,10 @@ import random
 from aiogram import types
 from aiogram.utils import executor
 
+from app.recipes import Button
 from data import breakfast, lunch, dinner
 from app import keyboard
-from app.handlers import AnswerHandler
+# from app.handlers import AnswerHandler
 from app.core import dp, bot
 
 
@@ -28,21 +29,9 @@ async def cmd_help(message: types.Message):
 
 @dp.callback_query_handler()
 async def callback_answer(call):
-    handler = AnswerHandler(call)
-    await handler.get_answer()
-    # recipe_id = ''
-    # if call.data == 'breakfast':
-    #     recipe_id = str(breakfast.data[random.randint(0, len(breakfast.data))])
-    # elif call.data == 'lunch':
-    #     recipe_id = str(lunch.data[random.randint(0, len(lunch.data))])
-    # elif call.data == 'dinner':
-    #     recipe_id = str(dinner.data[random.randint(0, len(dinner.data))])
-    # else:
-    #     await bot.send_message(call.from_user.id, 'Это я еще не обрабатываю')
-    # if recipe_id != '':
-    #     await bot.send_message(call.from_user.id,
-    #                            f'https://www.russianfood.com/recipes/recipe.php?rid={recipe_id}',
-    #                            reply_markup=keyboard.lss_kb)
+    handler = Button(call)
+    ans = str(handler.get_recipe(call.data))
+    await bot.send_message(call.from_user.id, f'https://www.russianfood.com/recipes/recipe.php?rid={ans}')
     await call.answer()
 
 
@@ -52,10 +41,9 @@ async def get_option(message: types.Message):
         await message.answer('На выбор 3 основных времени приёма пищи: ',
                              reply_markup=keyboard.options_kb)
     elif message.text == 'Быстрый рецепт':
-        all_recipes = breakfast.data + lunch.data + dinner.data
-        fast_id = str(all_recipes[random.randint(0, len(breakfast.data))])
-        await message.answer(f'https://www.russianfood.com/recipes/recipe.php?rid={fast_id}',
-                             reply_markup=keyboard.lss_kb)
+        all_recipes = breakfast.list + lunch.list + dinner.list
+        fast_id = str(all_recipes[random.randint(0, len(all_recipes))])
+        await message.answer(f'https://www.russianfood.com/recipes/recipe.php?rid={fast_id}')
     else:
         await bot.send_message(message.from_user.id,
                                'Сорян, не умею по человечьи. Только <b>команды</b>\n'
